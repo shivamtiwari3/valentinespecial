@@ -5,7 +5,7 @@ export function generateValentineId(): string {
 }
 
 export function getShareUrl(id: string): string {
-    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'
+    const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://valentinespecial.vercel.app'
     return `${baseUrl}/v/${id}`
 }
 
@@ -14,16 +14,6 @@ export function getWhatsAppShareUrl(url: string, partnerName: string): string {
     return `https://wa.me/?text=${text}`
 }
 
-export function validatePartnerName(name: string): { valid: boolean; error?: string } {
-    const trimmed = name.trim()
+// Note: Partner name validation is now handled in lib/security.ts
+// Use sanitizePartnerName() from security.ts for comprehensive validation
 
-    if (!trimmed) {
-        return { valid: false, error: 'Name is required' }
-    }
-
-    if (trimmed.length > 30) {
-        return { valid: false, error: 'Name must be 30 characters or less' }
-    }
-
-    return { valid: true }
-}

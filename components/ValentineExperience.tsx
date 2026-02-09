@@ -82,18 +82,6 @@ export default function ValentineExperience({ partnerName, coupleImage }: Valent
         <>
             <link rel="stylesheet" href="/style2.css" />
 
-            <div className="flex f-aps">
-                <p className="text-center">
-                    Made with ❤️ by{' '}
-                    <a href="https://www.instagram.com/shivamtiwari.in" target="_blank" rel="noopener noreferrer">
-                        Shivam
-                    </a>
-                </p>
-                <a href="https://github.com/shivamtiwari3" target="_blank" rel="noopener noreferrer">
-                    <img className="image2" src="https://logodix.com/logo/1205168.png" alt="GitHub" />
-                </a>
-            </div>
-
             <h1 className="headerText">{`Hey ${partnerName}… Valentine banogi?`}</h1>
 
             <div style={{ position: 'relative', display: 'inline-block' }}>
@@ -158,8 +146,48 @@ export default function ValentineExperience({ partnerName, coupleImage }: Valent
                 </div>
             )}
 
-            <div style={{ position: 'fixed', bottom: '10px', right: '10px', fontSize: '12px', opacity: 0.6 }}>
-                <Link href="/" className="text-pink-600 hover:text-pink-700">Make your own →</Link>
+            {/* Clean Footer Bar */}
+            <div style={{
+                position: 'fixed',
+                bottom: '0',
+                left: '0',
+                right: '0',
+                background: 'rgba(255, 255, 255, 0.95)',
+                backdropFilter: 'blur(10px)',
+                borderTop: '1px solid rgba(255, 192, 203, 0.3)',
+                padding: '12px 20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '13px',
+                zIndex: 1000
+            }}>
+                <span style={{ color: '#666', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    Made with ❤️ by{' '}
+                    <a
+                        href="https://www.instagram.com/shivamtiwari.in"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#ec4899', textDecoration: 'none', fontWeight: '500' }}
+                    >
+                        Shivam
+                    </a>
+                </span>
+                <Link
+                    href="/"
+                    style={{
+                        color: '#ec4899',
+                        textDecoration: 'none',
+                        fontWeight: '600',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '4px',
+                        transition: 'transform 0.2s'
+                    }}
+                    className="hover-scale"
+                >
+                    Make your own →
+                </Link>
             </div>
         </>
     )
@@ -235,9 +263,37 @@ function HeartsPage({ partnerName, coupleImage }: { partnerName: string, coupleI
                 <div className="heart-9 absolute text-5xl left-[90%] animate-[float-up_9s_linear_infinite]" style={{ animationDelay: '0.8s' }}>💌</div>
             </div>
 
-            {/* Watermark */}
-            <div className="absolute bottom-4 right-4 text-xs text-white/60 z-30 font-medium">
-                <Link href="/" className="hover:text-pink-300 transition-colors">
+            {/* Clean Footer Bar */}
+            <div className="absolute bottom-0 left-0 right-0 z-30" style={{
+                background: 'rgba(255, 255, 255, 0.1)',
+                backdropFilter: 'blur(10px)',
+                borderTop: '1px solid rgba(255, 255, 255, 0.2)',
+                padding: '12px 20px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                fontSize: '13px'
+            }}>
+                <span style={{ color: 'rgba(255, 255, 255, 0.8)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                    Made with ❤️ by{' '}
+                    <a
+                        href="https://www.instagram.com/shivamtiwari.in"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ color: '#ffc0cb', textDecoration: 'none', fontWeight: '500' }}
+                    >
+                        Shivam
+                    </a>
+                </span>
+                <Link
+                    href="/"
+                    style={{
+                        color: '#ffc0cb',
+                        textDecoration: 'none',
+                        fontWeight: '600'
+                    }}
+                    className="hover:text-pink-300 transition-colors"
+                >
                     Make your own →
                 </Link>
             </div>

@@ -53,11 +53,15 @@ const nextConfig: NextConfig = {
     ];
   },
 
+  // Enable static export for GitHub Pages
+  output: 'export',
+
   // Disable x-powered-by header
   poweredByHeader: false,
 
   // Configure allowed image domains
   images: {
+    unoptimized: true, // Required for static export
     remotePatterns: [
       {
         protocol: 'https',

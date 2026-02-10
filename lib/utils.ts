@@ -6,7 +6,8 @@ export function generateValentineId(): string {
 
 export function getShareUrl(id: string): string {
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://valentinespecial.vercel.app'
-    return `${baseUrl}/v/${id}`
+    // Use query param for static export compatibility
+    return `${baseUrl}/view?id=${id}`
 }
 
 export function getWhatsAppShareUrl(url: string, partnerName: string): string {

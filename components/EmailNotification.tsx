@@ -1,6 +1,8 @@
 'use client'
 
 import { useState } from 'react'
+import { supabase } from '@/lib/supabase'
+import { validateEmail } from '@/lib/security'
 
 interface EmailNotificationProps {
     valentineId: string
@@ -17,28 +19,34 @@ export default function EmailNotification({ valentineId, partnerName }: EmailNot
         setStatus('loading')
         setMessage('')
 
+        const cleanEmail = email.trim().toLowerCase()
+
+        if (!validateEmail(cleanEmail)) {
+            setStatus('error')
+            setMessage('Please enter a valid email address')
+            return
+        }
+
         try {
-            const response = await fetch('/api/notification/subscribe', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    valentineId,
-                    email: email.trim().toLowerCase()
+            const { error } = await supabase
+                .from('valentines')
+                .update({
+                    notification_email: cleanEmail,
+                    email_notified: false
                 })
-            })
+                .eq('id', valentineId)
 
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to subscribe')
+            if (error) {
+                throw error
             }
 
             setStatus('success')
-            setMessage(`✅ Perfect! We'll email you at ${email} when ${partnerName} opens your valentine!`)
+            setMessage(`✅ Perfect! We'll email you at ${cleanEmail} when ${partnerName} opens your valentine!`)
             setEmail('')
         } catch (err) {
+            console.error('Error saving email:', err)
             setStatus('error')
-            setMessage(err instanceof Error ? err.message : 'Something went wrong')
+            setMessage('Something went wrong. Please try again.')
         }
     }
 

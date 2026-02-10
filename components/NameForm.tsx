@@ -3,6 +3,9 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Image from 'next/image'
+import { supabase } from '@/lib/supabase'
+import { generateValentineId } from '@/lib/utils'
+import { sanitizePartnerName, validateBase64Image } from '@/lib/security'
 
 export default function NameForm() {
     const [partnerName, setPartnerName] = useState('')
@@ -51,26 +54,41 @@ export default function NameForm() {
         setLoading(true)
 
         try {
-            const response = await fetch('/api/create', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    partnerName,
-                    coupleImage
-                }),
-            })
-
-            const data = await response.json()
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to create valentine')
+            // Validate partner name
+            const nameValidation = sanitizePartnerName(partnerName)
+            if (!nameValidation.valid) {
+                throw new Error(nameValidation.error || 'Invalid name')
             }
 
-            // Redirect to success page
-            router.push(`/success/${data.id}`)
+            // Validate image
+            const imageValidation = validateBase64Image(coupleImage)
+            if (!imageValidation.valid) {
+                throw new Error(imageValidation.error || 'Invalid image')
+            }
+
+            // Generate ID
+            const id = generateValentineId()
+
+            // Insert into Supabase directly
+            const { error: insertError } = await supabase
+                .from('valentines')
+                .insert([
+                    {
+                        id,
+                        partner_name: nameValidation.sanitized,
+                        couple_image: coupleImage,
+                        view_count: 0
+                    }
+                ])
+
+            if (insertError) {
+                throw insertError
+            }
+
+            // Redirect to success page with query param
+            router.push(`/success?id=${id}`)
         } catch (err) {
+            console.error('Error creating valentine:', err)
             setError(err instanceof Error ? err.message : 'Something went wrong')
             setLoading(false)
         }

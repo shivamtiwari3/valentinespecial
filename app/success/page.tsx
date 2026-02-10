@@ -1,31 +1,64 @@
-import { notFound, redirect } from 'next/navigation'
+'use client'
+
+import { useEffect, useState, Suspense } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { supabase } from '@/lib/supabase'
 import { getShareUrl } from '@/lib/utils'
-import ShareButtons from '@/components/ShareButtons'
 import GitHubStarButton from '@/components/GitHubStarButton'
 import EmailNotification from '@/components/EmailNotification'
 import CopyButton from '@/components/CopyButton'
-import Link from 'next/link'
 
-interface PageProps {
-    params: Promise<{ id: string }>
-}
+function SuccessContent() {
+    const searchParams = useSearchParams()
+    const id = searchParams.get('id')
+    const router = useRouter()
 
-export default async function SuccessPage({ params }: PageProps) {
-    const { id } = await params
+    const [valentine, setValentine] = useState<any>(null)
+    const [loading, setLoading] = useState(true)
 
-    // Fetch valentine data
-    const { data: valentine, error } = await supabase
-        .from('valentines')
-        .select('*')
-        .eq('id', id)
-        .single()
+    useEffect(() => {
+        if (!id) {
+            router.push('/')
+            return
+        }
 
-    if (error || !valentine) {
-        redirect('/')
+        async function fetchValentine() {
+            try {
+                const { data, error } = await supabase
+                    .from('valentines')
+                    .select('*')
+                    .eq('id', id)
+                    .single()
+
+                if (error || !data) {
+                    router.push('/')
+                    return
+                }
+
+                setValentine(data)
+            } catch (err) {
+                console.error('Error fetching valentine:', err)
+                router.push('/')
+            } finally {
+                setLoading(false)
+            }
+        }
+
+        fetchValentine()
+    }, [id, router])
+
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-pink-50">
+                <div className="w-16 h-16 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
+            </div>
+        )
     }
 
-    const shareUrl = getShareUrl(id)
+    if (!valentine) return null
+
+    const shareUrl = getShareUrl(id!)
 
     return (
         <main className="min-h-screen bg-gradient-to-br from-pink-50 via-red-50 to-purple-50 py-6 sm:py-10 px-4 flex items-center justify-center">
@@ -68,7 +101,7 @@ export default async function SuccessPage({ params }: PageProps) {
                         </a>
 
                         <Link
-                            href={`/v/${id}`}
+                            href={`/view?id=${id}`}
                             target="_blank"
                             className="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-50 text-gray-700 border border-gray-200 rounded-xl font-semibold hover:bg-gray-100 transition-all text-sm"
                         >
@@ -77,7 +110,7 @@ export default async function SuccessPage({ params }: PageProps) {
                     </div>
 
                     {/* Email Notification Integration */}
-                    <EmailNotification valentineId={id} partnerName={valentine.partner_name} />
+                    <EmailNotification valentineId={id!} partnerName={valentine.partner_name} />
                 </div>
 
                 {/* Footer Actions */}
@@ -95,5 +128,17 @@ export default async function SuccessPage({ params }: PageProps) {
                 </div>
             </div>
         </main>
+    )
+}
+
+export default function SuccessPage() {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen flex items-center justify-center bg-pink-50">
+                <div className="w-16 h-16 border-4 border-pink-200 border-t-pink-500 rounded-full animate-spin"></div>
+            </div>
+        }>
+            <SuccessContent />
+        </Suspense>
     )
 }
